@@ -29,12 +29,15 @@ int main()
                 customer.browser_info();
                 break;
             case 6:
+                customer.viewReaderInfo();
+                break;
+            case 7:
                 customer.exitSystem();
                 break;
             default:
                 break;
             }
-        } while (choice < 6);
+        } while (choice < 7);
     }
     catch (sql::SQLException &e)
     {

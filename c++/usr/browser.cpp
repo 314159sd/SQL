@@ -9,7 +9,8 @@ void LIB::Browser::displayMenu()
     std::cout << "3. 订阅图书" << std::endl;
     std::cout << "4. 归还图书" << std::endl;
     std::cout << "5. 填写读者信息" << std::endl;
-    std::cout << "6. 退出系统" << std::endl;
+    std::cout << "6. 查看读者信息" << std::endl;
+    std::cout << "7. 退出系统" << std::endl;
     std::cout << "请选择操作: ";
 }
 void LIB::Browser::viewBooks()
@@ -35,9 +36,6 @@ void LIB::Browser::viewBooks()
                       << this->result->getInt("totalcopies") << "\t"
                       << this->result->getInt("availablecopies") << std::endl;
         }
-
-        delete this->result;
-        delete this->state;
     }
     catch (sql::SQLException &e)
     {
@@ -82,7 +80,7 @@ void LIB::Browser::searchBook()
             std::cout << "无效的选择！" << std::endl;
             return;
         }
-
+        
         this->state = this->conn->createStatement();
         this->result = this->state->executeQuery(query);
 
@@ -109,9 +107,6 @@ void LIB::Browser::searchBook()
         {
             std::cout << "未找到匹配的图书！" << std::endl;
         }
-
-        delete this->result;
-        delete this->state;
     }
     catch (sql::SQLException &e)
     {
@@ -133,10 +128,12 @@ void LIB::Browser::browser_info()
         std::cout << "请输入邮箱: ";
         std::getline(std::cin, email);
 
+        this->state = this->conn->createStatement();
         this->result = this->state->executeQuery("SELECT * FROM readers WHERE email = '" + email + "'");
 
         if (this->result->next())
         {
+            this->currentReaderId = this->result->getInt("readerid");
             std::cout << "该邮箱已注册！" << std::endl;
             return;
         }
@@ -164,7 +161,6 @@ void LIB::Browser::browser_info()
         {
             std::cout << "读者信息添加失败！" << std::endl;
         }
-
         delete pstmt;
     }
     catch (sql::SQLException &e)
@@ -173,36 +169,37 @@ void LIB::Browser::browser_info()
     }
 }
 
-// void LIB::Browser::viewReaderInfo()
-// {
-//     try
-//     {
-//         if (this->currentReaderId == 0)
-//         {
-//             std::cout << "\n请先填写读者信息！" << std::endl;
-//             return;
-//         }
-//         this->result = this->state->executeQuery("SELECT * FROM readers WHERE readerid = " + std::to_string(this->currentReaderId));
+void LIB::Browser::viewReaderInfo()
+{
+    try
+    {
+        if (this->currentReaderId == 0)
+        {
+            std::cout << "\n请先填写读者信息！" << std::endl;
+            return;
+        }
+        this->state = this->conn->createStatement();
+        this->result = this->state->executeQuery("SELECT * FROM readers WHERE readerid = " + std::to_string(this->currentReaderId));
 
-//         if (this->result->next())
-//         {
-//             std::cout << "\n读者信息:" << std::endl;
-//             std::cout << "读者ID: " << this->result->getInt("readerid") << std::endl;
-//             std::cout << "姓名: " << this->result->getString("name") << std::endl;
-//             std::cout << "联系电话: " << this->result->getString("phone") << std::endl;
-//             std::cout << "邮箱: " << this->result->getString("email") << std::endl;
-//             std::cout << "注册时间: " << this->result->getString("registerdate") << std::endl;
-//         }
-//         else
-//         {
-//             std::cout << "读者信息不存在！" << std::endl;
-//         }
-//     }
-//     catch (sql::SQLException &e)
-//     {
-//         std::cout << "查看读者信息失败: " << e.what() << std::endl;
-//     }
-// }
+        if (this->result->next())
+        {
+            std::cout << "\n读者信息:" << std::endl;
+            std::cout << "读者ID: " << this->result->getInt("readerid") << std::endl;
+            std::cout << "姓名: " << this->result->getString("name") << std::endl;
+            std::cout << "联系电话: " << this->result->getString("phone") << std::endl;
+            std::cout << "邮箱: " << this->result->getString("email") << std::endl;
+            std::cout << "注册时间: " << this->result->getString("registerdate") << std::endl;
+        }
+        else
+        {
+            std::cout << "读者信息不存在！" << std::endl;
+        }
+    }
+    catch (sql::SQLException &e)
+    {
+        std::cout << "查看读者信息失败: " << e.what() << std::endl;
+    }
+}
 
 void LIB::Browser::subscribeBook()
 {
@@ -216,6 +213,7 @@ void LIB::Browser::subscribeBook()
 
         int bookid;
         std::cout << "\n订阅图书" << std::endl;
+        this->searchBook();
         std::cout << "请输入要订阅的图书ID: ";
         std::cin >> bookid;
 
@@ -226,8 +224,8 @@ void LIB::Browser::subscribeBook()
         if (!this->result->next())
         {
             std::cout << "图书不存在！" << std::endl;
-            delete this->result;
-            delete this->state;
+            // delete this->result;
+            // delete this->state;
             return;
         }
 
@@ -235,13 +233,8 @@ void LIB::Browser::subscribeBook()
         if (available <= 0)
         {
             std::cout << "该图书已无可用副本！" << std::endl;
-            delete this->result;
-            delete this->state;
             return;
         }
-
-        delete this->result;
-        delete this->state;
 
         // 开始事务
         this->conn->setAutoCommit(false);
@@ -308,6 +301,7 @@ void LIB::Browser::returnBook()
 
         int bookid;
         std::cout << "\n归还图书" << std::endl;
+        this->viewBorrowRecords();
         std::cout << "请输入要归还的图书ID: ";
         std::cin >> bookid;
 
@@ -321,14 +315,10 @@ void LIB::Browser::returnBook()
         if (!this->result->next())
         {
             std::cout << "没有找到该图书的借阅记录！" << std::endl;
-            delete this->result;
-            delete this->state;
             return;
         }
 
         int borrowid = this->result->getInt("borrowid");
-        delete this->result;
-        delete this->state;
 
         // 开始事务
         this->conn->setAutoCommit(false);
@@ -381,3 +371,46 @@ void LIB::Browser::returnBook()
         std::cout << "归还图书失败: " << e.what() << std::endl;
     }
 }
+
+
+void LIB::Browser::viewBorrowRecords()
+{
+    try
+    {
+        
+        this->result = this->state->executeQuery(
+            "SELECT b.borrowid, b.bookid, bo.title, b.readerid, r.name, b.borrowdate, b.duedate, b.returndate, b.status "
+            "FROM borrows b "
+            "JOIN books bo ON b.bookid = bo.bookid "
+            "JOIN readers r ON b.readerid = r.readerid");
+
+        std::cout << "\n借阅记录列表:" << std::endl;
+        std::cout << "借阅ID\t图书ID\t图书标题\t读者ID\t读者姓名\t借阅时间\t\t应还日期\t\t实际归还时间\t\t状态" << std::endl;
+        std::cout << "--------------------------------------------------------------------------------------------------------------------------------------------------------" << std::endl;
+
+        bool found = false;
+        while (this->result->next())
+        {
+            found = true;
+            std::cout << this->result->getInt("borrowid") << "\t"
+                      << this->result->getInt("bookid") << "\t"
+                      << this->result->getString("title") << "\t"
+                      << this->result->getInt("readerid") << "\t"
+                      << this->result->getString("name") << "\t"
+                      << this->result->getString("borrowdate") << "\t"
+                      << this->result->getString("duedate") << "\t"
+                      << (this->result->isNull("returndate") ? "未归还" : this->result->getString("returndate")) << "\t"
+                      << this->result->getString("status") << std::endl;
+        }
+
+        if (!found)
+        {
+            std::cout << "暂无借阅记录！" << std::endl;
+        }
+    }
+    catch (sql::SQLException &e)
+    {
+        std::cout << "查看借阅记录失败: " << e.what() << std::endl;
+    }
+}
+

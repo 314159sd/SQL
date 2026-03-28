@@ -43,8 +43,8 @@ void LIB::Usr::viewBooks()
                       << this->result->getInt("availablecopies") << std::endl;
         }
 
-        delete this->result;
-        delete this->state;
+        // delete this->result;
+        // delete this->state;
     }
     catch (sql::SQLException &e)
     {
@@ -130,8 +130,8 @@ void LIB::Usr::updateBook()
             return;
         }
 
-        delete this->result;
-        delete this->state;
+        // delete this->result;
+        // delete this->state;
 
         std::string title, author, isbn, publisher, category;
         int publishyear, totalcopies, availablecopies;
@@ -255,7 +255,6 @@ void LIB::Usr::searchBook()
             std::cout << "无效的选择！" << std::endl;
             return;
         }
-
         this->state = this->conn->createStatement();
         this->result = this->state->executeQuery(query);
 
@@ -283,8 +282,8 @@ void LIB::Usr::searchBook()
             std::cout << "未找到匹配的图书！" << std::endl;
         }
 
-        delete this->result;
-        delete this->state;
+        // delete this->result;
+        // delete this->state;
     }
     catch (sql::SQLException &e)
     {
@@ -296,6 +295,7 @@ void LIB::Usr::viewSubscriberInfo()
 {
     try
     {
+        this->state = this->conn->createStatement();
         this->result = this->state->executeQuery("SELECT * FROM readers");
 
         std::cout << "\n读者信息列表:" << std::endl;
@@ -321,6 +321,7 @@ void LIB::Usr::viewBorrowRecords()
 {
     try
     {
+        this->state = this->conn->createStatement();
         this->result = this->state->executeQuery(
             "SELECT b.borrowid, b.bookid, bo.title, b.readerid, r.name, b.borrowdate, b.duedate, b.returndate, b.status "
             "FROM borrows b "

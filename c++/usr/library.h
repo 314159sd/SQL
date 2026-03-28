@@ -28,13 +28,13 @@ namespace LIB
         bool pass();
         virtual void displayMenu() = 0;
         virtual void exitSystem();
-        
+        virtual void viewBorrowRecords() = 0;
         
 
-        sql::mysql::MySQL_Driver *driver;
-        sql::Connection *conn;
-        sql::Statement *state;
-        sql::ResultSet *result;
+        sql::mysql::MySQL_Driver *driver = nullptr;
+        sql::Connection *conn = nullptr;
+        sql::Statement *state = nullptr;
+        sql::ResultSet *result = nullptr;
     };
 
 }

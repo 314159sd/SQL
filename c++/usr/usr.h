@@ -6,7 +6,6 @@ namespace LIB
 {
     class Usr : Library
     {
-        // int choice;
 
     public:
         Usr(std::string &&ip_m, std::string &&usr_m, std::string &&passward_m) : Library(ip_m, usr_m, passward_m)
