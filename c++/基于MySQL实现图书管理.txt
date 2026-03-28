@@ -1,0 +1,46 @@
+sql -- 创建数据库 CREATE DATABASE IF NOT EXISTS librarysystem DEFAULT CHARACTER SET utf8mb4; 
+USE librarysystem; 
+
+
+ 图书表（存储图书基础信息） 
+ CREATE TABLE books ( 
+ bookid INT AUTO_INCREMENT PRIMARY KEY COMMENT '图书ID，自增主键', 
+ title VARCHAR(200) NOT NULL COMMENT '图书名称', 
+ author VARCHAR(100) COMMENT '作者', 
+ isbn VARCHAR(13) UNIQUE COMMENT 'ISBN编号，唯一约束', 
+ publisher VARCHAR(100) COMMENT '出版社', 
+ publishyear YEAR COMMENT '出版年份', 
+ category VARCHAR(50) COMMENT '图书分类', 
+ totalcopies INT DEFAULT 1 COMMENT '总库存', 
+ availablecopies INT DEFAULT 1 COMMENT '可借数量', 
+ createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间' ); 
+ 
+  读者表（存储读者/用户信息） 
+  CREATE TABLE readers ( readerid INT AUTOINCREMENT PRIMARY KEY COMMENT '读者ID，自增主键', 
+  name VARCHAR(100) NOT NULL COMMENT '读者姓名', 
+  phone VARCHAR(15) COMMENT '联系电话', 
+  email VARCHAR(100) UNIQUE COMMENT '邮箱，唯一约束', 
+  registerdate TIMESTAMP DEFAULT CURRENTTIMESTAMP COMMENT '注册时间' );
+  
+  
+   借阅记录表（存储图书借还记录，关联图书和读者） 
+CREATE TABLE borrows ( 
+ borrowid INT AUTO_INCREMENT PRIMARY KEY COMMENT '借阅记录ID，自增主键',
+ bookid INT COMMENT '关联图书ID', 
+ readerid INT COMMENT '关联读者ID',
+ borrowdate timestamp DEFAULT NOW() COMMENT '借阅时间', 
+ duedate DATE NOT NULL COMMENT '应还日期', 
+ returndate TIMESTAMP NULL COMMENT '实际归还时间', 
+ status ENUM('borrowed', 'returned', 'overdue') DEFAULT 'borrowed' COMMENT '借阅状态', 
+ -- 外键约束，确保记录关联有效 
+ FOREIGN KEY (bookid) REFERENCES books(bookid) ON DELETE CASCADE, 
+ FOREIGN KEY (readerid) REFERENCES readers(readerid) ON DELETE CASCADE );
+   
+   
+   
+   
+   
+   
+   
+ 图书管理（增删改查） sql -- 添加图书 INSERT INTO books (title, author, isbn, publisher, publishyear, category, totalcopies, availablecopies) VALUES ('Java编程思想', 'Bruce Eckel', '9787111213826', '机械工业出版社', 2007, '计算机', 5, 5); -- 修改图书信息 UPDATE books SET price = 89.00 WHERE bookid = 1; -- 删除图书 DELETE FROM books WHERE bookid = 1; -- 查询所有可借图书 SELECT FROM books WHERE availablecopies >0; -- 按分类查询图书 SELECT FROM books WHERE category = '计算机';#### 2. 读者管理（增删改查） sql -- 添加读者 INSERT INTO readers (name, phone, email) VALUES ('张三', '13800138000', 'zhangsan@example.com'); -- 修改读者信息 UPDATE readers SET phone = '13900139000' WHERE readerid = 1; -- 查询所有读者 SELECT * FROM readers;#### 3. 借阅与归还业务 sql -- 借出图书（需通过事务保证数据一致性） START TRANSACTION; -- 插入借阅记录，应还日期设为借阅后14天 INSERT INTO borrows (bookid, readerid, duedate) VALUES (1, 1, DATEADD(CURDATE(), INTERVAL 14 DAY)); -- 同步减少可借库存 UPDATE books SET availablecopies = availablecopies - 1 WHERE bookid = 1 AND availablecopies >0; COMMIT; -- 归还图书 START TRANSACTION; -- 更新借阅记录的归还时间与状态 UPDATE borrows SET returndate = NOW(), status = 'returned' WHERE bookid = 1 AND readerid = 1 AND status = 'borrowed'; -- 同步增加可借库存 UPDATE books SET availablecopies = availablecopies + 1 WHERE bookid = 1; COMMIT;#### 4. 统计与查询 sql -- 查询某读者的未归还图书 SELECT b.title, br.borrowdate, br.duedate FROM borrows br JOIN books b ON br.bookid = b.bookid WHERE br.readerid = 1 AND br.status = 'borrowed'; -- 统计逾期图书 SELECT r.name, b.title, br.duedate FROM borrows br JOIN readers r ON br.readerid = r.readerid JOIN books b ON br.bookid = b.bookid WHERE br.status = 'borrowed' AND br.duedate <CURDATE(); -- 统计图书借阅次数 SELECT b.title, COUNT(br.borrowid) AS borrowcount FROM borrows br JOIN books b ON br.bookid = b.bookid GROUP BY b.bookid ORDER BY borrowcount DESC;### 三、进阶优化建议 1. 索引优化：在books表的isbn、title字段，readers表的phone、email字段添加索引，提升查询速度； 2. 触发器/存储过程：可通过触发器自动维护availablecopies字段，避免手动更新出错； 3. 事务控制：所有涉及库存和状态变更的操作，必须通过事务保证原子性，防止数据不一致。
+

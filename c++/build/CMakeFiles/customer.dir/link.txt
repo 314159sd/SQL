@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/customer.dir/customer.cpp.o -o customer   -L/home/yoyo/mysql/c++/lib  -Wl,-rpath,/home/yoyo/mysql/c++/lib ../lib/liblibrary.so -lmysqlcppconn 

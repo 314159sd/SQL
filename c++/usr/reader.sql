@@ -1,0 +1,5 @@
+  CREATE TABLE readers ( readerid INT AUTO_INCREMENT PRIMARY KEY COMMENT '读者ID,自增主键', 
+  name VARCHAR(100) NOT NULL COMMENT '读者姓名', 
+  phone VARCHAR(15) COMMENT '联系电话', 
+  email VARCHAR(100) UNIQUE COMMENT '邮箱，唯一约束', 
+  registerdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间' );
