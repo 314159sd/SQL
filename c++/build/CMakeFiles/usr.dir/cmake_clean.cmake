@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
+  "../bin/usr"
+  "../bin/usr.pdb"
   "CMakeFiles/usr.dir/user.cpp.o"
   "CMakeFiles/usr.dir/user.cpp.o.d"
-  "usr"
-  "usr.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

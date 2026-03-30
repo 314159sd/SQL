@@ -1,5 +1,5 @@
-/home/yoyo/mysql/c++/build/CMakeFiles/library.dir
-/home/yoyo/mysql/c++/build/CMakeFiles/usr.dir
-/home/yoyo/mysql/c++/build/CMakeFiles/customer.dir
-/home/yoyo/mysql/c++/build/CMakeFiles/edit_cache.dir
-/home/yoyo/mysql/c++/build/CMakeFiles/rebuild_cache.dir
+/home/yoyo/git/SQL/c++/build/CMakeFiles/library.dir
+/home/yoyo/git/SQL/c++/build/CMakeFiles/usr.dir
+/home/yoyo/git/SQL/c++/build/CMakeFiles/customer.dir
+/home/yoyo/git/SQL/c++/build/CMakeFiles/edit_cache.dir
+/home/yoyo/git/SQL/c++/build/CMakeFiles/rebuild_cache.dir

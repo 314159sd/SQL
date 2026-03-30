@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/yoyo/mysql/c++/usr
+CXX_INCLUDES = -I/home/yoyo/git/SQL/c++/usr
 
 CXX_FLAGS = 
 

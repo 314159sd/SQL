@@ -1,4 +1,4 @@
-# Install script for directory: /home/yoyo/mysql/c++
+# Install script for directory: /home/yoyo/git/SQL/c++
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/yoyo/mysql/c++/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/yoyo/git/SQL/c++/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

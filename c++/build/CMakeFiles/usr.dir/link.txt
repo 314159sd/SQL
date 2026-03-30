@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/usr.dir/user.cpp.o -o usr   -L/home/yoyo/mysql/c++/lib  -Wl,-rpath,/home/yoyo/mysql/c++/lib ../lib/liblibrary.so -lmysqlcppconn 
+/usr/bin/c++ CMakeFiles/usr.dir/user.cpp.o -o ../bin/usr   -L/home/yoyo/git/SQL/c++/lib  -Wl,-rpath,/home/yoyo/git/SQL/c++/lib ../lib/liblibrary.so -lmysqlcppconn 
